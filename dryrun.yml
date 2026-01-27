@@ -18,7 +18,7 @@ jobs:
             exit 0
           fi
 
-          # Anchor date (UTC) — corresponds to 27 Jan 2026 17:40 IST
+          # Anchor date (UTC) — corresponds to 27 Jan 2026 17:45 IST
           ANCHOR_DATE="2026-01-27"
           TODAY=$(date -u +%Y-%m-%d)
 
