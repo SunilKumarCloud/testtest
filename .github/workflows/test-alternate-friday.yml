@@ -1,0 +1,41 @@
+name: Test Alternate Friday Logic
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  test-cron:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check alternate-week logic
+        run: |
+          if [[ "${{ github.event_name }}" != "schedule" ]]; then
+            echo "Non-scheduled run. Proceeding."
+            echo "i am here"
+            exit 0
+          fi
+
+          # Anchor date (UTC) — corresponds to 27 Jan 2026 17:45 IST
+          ANCHOR_DATE="2026-01-27"
+          TODAY=$(date -u +%Y-%m-%d)
+
+          ANCHOR_TS=$(date -u -d "$ANCHOR_DATE" +%s)
+          TODAY_TS=$(date -u -d "$TODAY" +%s)
+
+          DAYS_DIFF=$(( (TODAY_TS - ANCHOR_TS) / 86400 ))
+
+          if (( DAYS_DIFF < 0 )); then
+            echo "Before anchor date. Skipping."
+            exit 0
+          fi
+
+          if (( DAYS_DIFF % 14 != 0 )); then
+            echo "Not an allowed alternate day. Skipping."
+            exit 0
+          fi
+
+          echo "Alternate window confirmed."
+          echo "i am here"
