@@ -16,6 +16,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: last-run-ts
+          path: .
         continue-on-error: true
 
       - name: Decide whether to run
@@ -24,8 +25,10 @@ jobs:
 
           if [[ -f last_run_ts.txt ]]; then
             LAST_RUN_TS=$(cat last_run_ts.txt)
+            echo "Found previous timestamp: $LAST_RUN_TS"
           else
             LAST_RUN_TS=""
+            echo "No previous timestamp found"
           fi
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -36,7 +39,7 @@ jobs:
           fi
 
           if [[ -z "$LAST_RUN_TS" ]]; then
-            echo "No baseline yet. Skipping."
+            echo "No baseline yet. Skipping scheduled run."
             exit 0
           fi
 
