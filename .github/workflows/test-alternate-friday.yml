@@ -18,7 +18,7 @@ jobs:
           fi
 
           # Start time: 28 Jan 2026 12:30 UTC (6:00 PM IST)
-          START_TS=$(date -u -d "2026-01-28 12:30" +%s)
+          START_TS=$(date -u -d "2026-01-28 12:40" +%s)
           NOW_TS=$(date -u +%s)
 
           if (( NOW_TS < START_TS )); then
