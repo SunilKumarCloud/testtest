@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Run every 5 mins starting 27 Jan 2026 7:20 PM IST
+      - name: Run every 5 mins starting 28 Jan 2026 6:00 PM IST
         run: |
           if [[ "${{ github.event_name }}" != "schedule" ]]; then
             echo "Manual run."
             exit 0
           fi
 
-          # Start time: 27 Jan 2026 13:50 UTC (7:20 PM IST)
-          START_TS=$(date -u -d "2026-01-27 13:50" +%s)
+          # Start time: 28 Jan 2026 12:30 UTC (6:00 PM IST)
+          START_TS=$(date -u -d "2026-01-28 12:30" +%s)
           NOW_TS=$(date -u +%s)
 
           if (( NOW_TS < START_TS )); then
