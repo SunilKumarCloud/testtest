@@ -12,15 +12,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download last run timestamp (if exists)
+        uses: actions/download-artifact@v4
+        with:
+          name: last-run-ts
+        continue-on-error: true
+
       - name: Decide whether to run
-        env:
-          LAST_RUN_TS: ${{ vars.LAST_RUN_TS }}
         run: |
           NOW_TS=$(date -u +%s)
 
+          if [[ -f last_run_ts.txt ]]; then
+            LAST_RUN_TS=$(cat last_run_ts.txt)
+          else
+            LAST_RUN_TS=""
+          fi
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "Manual first run. Executing."
-            echo "LAST_RUN_TS=$NOW_TS" >> $GITHUB_ENV
+            echo "$NOW_TS" > last_run_ts.txt
+            echo "RUN_JOB=true" >> $GITHUB_ENV
             exit 0
           fi
 
@@ -37,11 +48,12 @@ jobs:
           fi
 
           echo "10 minutes passed. Running job."
-          echo "LAST_RUN_TS=$NOW_TS" >> $GITHUB_ENV
+          echo "$NOW_TS" > last_run_ts.txt
+          echo "RUN_JOB=true" >> $GITHUB_ENV
 
-      - name: Persist last run timestamp
-        if: env.LAST_RUN_TS != ''
-        run: |
-          gh variable set LAST_RUN_TS --body "$LAST_RUN_TS"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload last run timestamp
+        if: env.RUN_JOB == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-run-ts
+          path: last_run_ts.txt
