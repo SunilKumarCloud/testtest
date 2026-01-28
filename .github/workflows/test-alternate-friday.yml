@@ -10,41 +10,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Decide whether to run
         env:
           LAST_RUN_TS: ${{ vars.LAST_RUN_TS }}
         run: |
           NOW_TS=$(date -u +%s)
 
-          # Manual run → always run and set timestamp
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "Manual first run. Executing."
             echo "LAST_RUN_TS=$NOW_TS" >> $GITHUB_ENV
-            echo "::notice::First run completed"
             exit 0
           fi
 
-          # Scheduled run but no previous timestamp → skip
           if [[ -z "$LAST_RUN_TS" ]]; then
-            echo "No baseline run yet. Skipping."
+            echo "No baseline yet. Skipping."
             exit 0
           fi
 
           DIFF=$(( NOW_TS - LAST_RUN_TS ))
 
-          # Run only if 10 minutes (600s) have passed
           if (( DIFF < 600 )); then
             echo "Only $DIFF seconds since last run. Skipping."
             exit 0
           fi
 
           echo "10 minutes passed. Running job."
-
-          # Update timestamp
           echo "LAST_RUN_TS=$NOW_TS" >> $GITHUB_ENV
-          echo "::notice::Scheduled run executed"
 
-      - name: Save last run timestamp
+      - name: Persist last run timestamp
         if: env.LAST_RUN_TS != ''
         run: |
           gh variable set LAST_RUN_TS --body "$LAST_RUN_TS"
