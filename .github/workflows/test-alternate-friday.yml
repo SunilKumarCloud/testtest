@@ -1,8 +1,8 @@
-name: Run every 10 minutes after anchor time
+name: Run every 10 minutes after anchor time
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # every 10 minutes (UTC)
+    - cron: "20/10 * * * *"   # 10:20, 10:30, 10:40… UTC ⇒ 15:50, 16:00, 16:10… IST
   workflow_dispatch:
 
 jobs:
@@ -13,10 +13,9 @@ jobs:
       - name: Enforce start time
         run: |
           # anchor 4 Mar 2026 15:50 IST → 10:20 UTC
-          ANCHOR_UTC="2026-03-04 10:20"
-          
+          ANCHOR_UTC="2026-03-04 10:25"
+
           NOW_UTC=$(date -u +"%Y-%m-%d %H:%M")
-          
           ANCHOR_TS=$(date -u -d "$ANCHOR_UTC" +%s)
           NOW_TS=$(date -u -d "$NOW_UTC" +%s)
 
@@ -32,4 +31,4 @@ jobs:
 
       - name: Actual job logic
         run: |
-          echo "🔥 This job runs every 10 minutes forever after 04‑03‑2026 3:50 PM IST"
+          echo "🔥 This job runs every 10 minutes forever after 04‑03‑2026 3:50 PM IST"
